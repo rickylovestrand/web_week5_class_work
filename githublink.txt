@@ -1,0 +1,4 @@
+https://github.com/rickylovestrand/web_week5_class_work
+
+The lab files are arrays_and_objects.js, tree.html, and github.html(the extra credit). 
+I only partially finished the extra credit. 
