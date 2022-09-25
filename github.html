@@ -1,0 +1,120 @@
+<html>
+    <head>
+        <title>GitHub Repository Analysis</title>
+        <!-- Optional - add some styles -->
+    </head>
+
+    <body>
+
+        <div>
+            <h1>GitHub Repository Programming Language Analysis</h1>
+
+            <label for="github-username">Enter GitHub Username</label>
+            <input id="github-username">
+            <button id="analyze">Analyze</button>
+
+            <div id="status-message"></div>
+
+            <div id="repository-statistics">
+                <!-- todo - your script will display the number of repositories with each programming language  -->
+            </div>
+
+            <div id="repository-list">
+                <!-- todo - your script will display a list of repositories here -->
+            </div>
+                
+        </div>
+            
+        <!-- TODO Use JavaScript to display list of languages and frequencies -->
+
+        <script>
+       
+            let analyzeButton = document.querySelector('#analyze')
+            let usernameInput = document.querySelector('#github-username')
+
+            let statusMessage = document.querySelector('#status-message')
+
+            let repoList = document.querySelector('#repository-list')
+            let repoStats = document.querySelector('#repository-statistics')
+
+
+            analyzeButton.addEventListener('click', function() {
+                // clear the current user stats so that we only show the data for one 
+                // user at a time
+                repoStats.innerHTML = ''
+                repoList.innerHTML = ''
+                let username = usernameInput.value
+                let url = `https://api.github.com/users/${username}/repos`
+                
+                statusMessage.innerHTML = 'Please wait...'
+                
+                fetch(url)   // make request to URL
+                    .then(response => response.json())  // extract the JSON from the response 
+                    .then(githubJson => {   
+                        displayRepositoriesOnPage(githubJson)
+                        })
+                    .catch(error => {    // handle errors that occur when requesting data or processing the response
+                        console.log(error)
+                        alert('Error fetching data from GitHub. Verify you are connected to the internet and the username is correct.')
+                    })
+                    .finally( () => {
+                        statusMessage.innerHTML = ''  // clear status message. Code in the finally handler always runs, regardless if the request works or failed. 
+                    })
+            })
+
+            function displayRepositoriesOnPage(githubJson) {
+
+                console.log(githubJson)   // just to show you that the JSON is available here
+            
+                let languages = []
+                githubJson.forEach(function(repo){
+                    // if the language isn't already in the array, then add it
+                    if (languages.indexOf(repo.language) == -1){
+                        languages.push(repo.language)
+                        languages.push(1) // this to add the count of this language
+                    } else {
+                        // if the language is already in the array, increment the count by 1
+                        languages[languages.indexOf(repo.language)+1]++
+                    }
+                })
+
+                // modify the array for display purposes so that the langauge
+                // and the count are a string in the same index. That way, 
+                // .join can be used with the new line character and each language, 
+                // with its count will be on its own line
+
+                for (let i = 0; i < languages.length; i++){
+                    if (i % 2 == 0) {
+                        languages[i] = languages[i] + ', ' + languages[i+1] 
+                    } 
+                }
+
+                // get rid of the elements in the array that had the count
+                for (let i = 1; i < languages.length; i++){
+                        languages.splice(i, 1)
+                }
+                
+                repoStats.innerHTML = languages.join('<br \>')
+                
+                // TODO use the JSON to display a list of the user's repositories
+                // Link to the repository
+                let repositoryLinks = []
+
+                githubJson.forEach(function(repo){
+                    repositoryLinks.push('<a href='+ "'" + repo.url + "'" + '>' + repo.name + '</a>')
+                })
+                
+                repoList.innerHTML = repositoryLinks.join('<br \>')
+
+                // What if the user doesn't have any repositories? Display an appropriate message - you can decide how you'll display this.
+                // Didn't get to this one...
+
+                // TODO create elements on page to display the languages used and each languages' frequency
+                // Didn't get to this one...
+                
+            }
+
+
+        </script>
+    </body>
+</html>
